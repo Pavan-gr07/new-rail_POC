@@ -413,7 +413,7 @@ export default function NetworkTopology() {
                             </div>
 
                             {/* Stations */}
-                            {treeLayout.nodes.map((node, idx) => {
+                            {treeLayout.nodes.map((node) => {
                                 const overallStatus = getStationOverallStatus(node.station);
                                 const statusColor = getStatusColor(overallStatus);
 
