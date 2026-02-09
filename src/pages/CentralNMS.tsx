@@ -431,7 +431,7 @@ export default function CNMSGISView() {
                         </Tooltip>
                         <Tooltip title="Map Type">
                             <IconButton
-                                onClick={(e) => {
+                                onClick={() => {
                                     const types: ('roadmap' | 'satellite' | 'hybrid' | 'terrain')[] = ['roadmap', 'satellite', 'hybrid', 'terrain'];
                                     const currentIndex = types.indexOf(mapType);
                                     const nextIndex = (currentIndex + 1) % types.length;

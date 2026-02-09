@@ -29,7 +29,7 @@ const navigationItems = [
     { label: "Announcements", path: "/announcements", icon: Radio },
     { label: "Configuration", path: "/config", icon: Settings },
     { label: "Network Topology", path: "/network", icon: Network },
-    { label: "GIS View", path: "/gis", icon: LocateFixed },
+    { label: "Edge NMS", path: "/gis", icon: LocateFixed },
     { label: "Central NMS", path: "/central", icon: LocateFixed },
 ];
 

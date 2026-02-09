@@ -112,7 +112,6 @@ export default function Events() {
     },
   ]);
 
-  const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const getEventIcon = (type: string) => {

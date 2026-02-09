@@ -14,8 +14,8 @@ import {
   Mic,
   Square,
   Trash2,
-  PlayCircle,
-  Loader,
+  // PlayCircle,
+  // Loader,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useState, useRef } from "react";
@@ -25,7 +25,7 @@ import { useState, useRef } from "react";
 //   getTTSEngine,
 //   markAnnouncementAnnounced,
 // } from "@/services/announcements";
-import type { AnnouncementRecord } from "../shared/api";
+// import type { AnnouncementRecord } from "../shared/api";
 
 interface StatusCard {
   label: string;
@@ -67,9 +67,9 @@ export default function Dashboard() {
   const audioChunksRef = useRef<Blob[]>([]);
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [autoAnnouncements, setAutoAnnouncements] = useState<
-    AnnouncementRecord[]
-  >([]);
+  // const [autoAnnouncements, setAutoAnnouncements] = useState<
+  //   AnnouncementRecord[]
+  // >([]);
   const [operationMode, setOperationMode] = useState<"auto" | "manual">(
     "manual",
   );
@@ -79,9 +79,9 @@ export default function Dashboard() {
     "english" | "hindi" | "regional"
   >("english");
   const [selectedColor, setSelectedColor] = useState("#FF6B6B");
-  const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const recordingIntervalRef = useRef<null>(null);
+  // const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
+  // const [isSpeaking, setIsSpeaking] = useState(false);
+  const recordingIntervalRef = useRef<number | null>(null);
   // const ttsEngine = getTTSEngine();
 
   // Load announcements on mount
@@ -420,15 +420,16 @@ export default function Dashboard() {
             </button>
             <button
               // onClick={handleTriggerDemo}
-              disabled={isSpeaking}
+              // disabled={isSpeaking}
+              disabled={true}
               className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors font-medium text-primary disabled:opacity-50"
             >
               <span>Test Auto Announcement</span>
-              {isSpeaking ? (
+              {/* {isSpeaking ? (
                 <Loader className="w-4 h-4 animate-spin" />
               ) : (
                 <PlayCircle className="w-4 h-4" />
-              )}
+              )} */}
             </button>
           </div>
         </div>
@@ -551,7 +552,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Automatic Announcements */}
+      {/* Automatic Announcements - Ready for future implementation */}
       {operationMode === "auto" && (
         <div className="bg-card border border-border rounded-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-border flex items-center gap-2">
@@ -559,12 +560,17 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-foreground">
               Automatic Announcements
             </h2>
-            {isLoadingAnnouncements && (
+            {/* {isLoadingAnnouncements && (
               <Loader className="w-4 h-4 animate-spin ml-auto" />
-            )}
+            )} */}
           </div>
           <div className="p-6">
-            {autoAnnouncements.length === 0 ? (
+            {/* Future implementation: Display auto announcements here */}
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No automatic announcements triggered yet. Train updates will be
+              announced automatically.
+            </p>
+            {/* {autoAnnouncements.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">
                 No automatic announcements triggered yet. Train updates will be
                 announced automatically.
@@ -614,7 +620,7 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-            )}
+            )} */}
           </div>
         </div>
       )}

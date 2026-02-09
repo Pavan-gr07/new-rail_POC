@@ -11,6 +11,7 @@ import Config from './pages/Config'
 import NetworkTopology from './pages/NetworkTopology'
 import GIS from "./pages/GIS";
 import NotFound from './pages/NotFound'
+import CNMSGISView from './pages/CentralNMS'
 
 function App() {
 
@@ -27,7 +28,7 @@ function App() {
           <Route path="/config" element={<Config />} />
           <Route path="/network" element={<NetworkTopology />} />
           <Route path="/gis" element={<GIS />} />
-          {/* <Route path="/central" element={<CNMSGISView />} /> */}
+          <Route path="/central" element={<CNMSGISView />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </MainLayout>

@@ -232,9 +232,6 @@ export default function NetworkTopology() {
         const container = canvasRef.current;
         const rect = container.getBoundingClientRect();
 
-        // Mouse position relative to container
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
 
         // Container center
         const centerX = rect.width / 2;
@@ -381,7 +378,7 @@ export default function NetworkTopology() {
                                     height: treeLayout.svgHeight,
                                 }}
                             >
-                                {treeLayout.nodes.map((node, idx) => {
+                                {treeLayout.nodes.map((node) => {
                                     const overallStatus = getStationOverallStatus(node.station);
                                     return (
                                         <line
