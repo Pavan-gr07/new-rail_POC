@@ -1,14 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { GoogleMap, MarkerF, useLoadScript, OverlayView, InfoWindowF } from '@react-google-maps/api';
+import React, { useState, useRef } from 'react';
+import { GoogleMap, MarkerF, useLoadScript, OverlayView } from '@react-google-maps/api';
 import {
     Box, Paper, Typography, Button, IconButton, Chip, Stack, Drawer,
-    List, ListItem, ListItemText, ListItemIcon, Switch, FormControlLabel,
-    Collapse, CircularProgress, Tooltip, Badge, Divider, ButtonGroup,
+    List, ListItemText, ListItemIcon,
+    Collapse, CircularProgress, Tooltip, Badge, ButtonGroup,
     ListItemButton
 } from '@mui/material';
 import {
-    MapPin, Monitor, ChevronDown, ChevronUp, Train,
-    ZoomIn, ZoomOut, Maximize2, Server, Cpu, Eye, EyeOff, Tag, Menu, Map as MapIcon
+    ChevronDown, ChevronUp, Train,
+    ZoomIn, ZoomOut, Maximize2, Tag, Menu, Map as MapIcon
 } from 'lucide-react';
 
 // Types

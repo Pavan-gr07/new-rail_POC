@@ -9,8 +9,6 @@ import Events from './pages/Events'
 import Announcements from './pages/Announcements'
 import Config from './pages/Config'
 import NetworkTopology from './pages/NetworkTopology'
-import { GitBranchPlus } from 'lucide-react'
-import CNMSGISView from './pages/CentralNMS'
 import GIS from "./pages/GIS";
 import NotFound from './pages/NotFound'
 

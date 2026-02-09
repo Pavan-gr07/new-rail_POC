@@ -1,5 +1,4 @@
 import {
-  Settings,
   Users,
   Palette,
   Server,

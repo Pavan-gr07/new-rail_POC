@@ -1,4 +1,4 @@
-import { Activity, AlertCircle, CheckCircle, TrendingUp } from "lucide-react";
+import { AlertCircle, CheckCircle } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useState } from "react";
 

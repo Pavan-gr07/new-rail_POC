@@ -1,4 +1,4 @@
-import { Train, Plus, Edit2, Trash2, AlertCircle } from "lucide-react";
+import { Train, Plus, Edit2, Trash2 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useState } from "react";
 

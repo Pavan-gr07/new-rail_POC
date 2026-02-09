@@ -1,11 +1,11 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, type JSX } from 'react';
 import { GoogleMap, MarkerF, useLoadScript, OverlayView } from '@react-google-maps/api';
 import {
     Box, Paper, Typography, TextField, Button, Card, CardContent, IconButton,
     Divider, Stack, CircularProgress, Drawer, Chip, Tooltip, ButtonGroup
 } from '@mui/material';
 import {
-    Camera, Router, Trash2, GripVertical, Menu, ZoomIn, ZoomOut, Maximize2, Tag, Server, Cpu, Database, HardDrive, Monitor
+    Router, Trash2, GripVertical, Menu, ZoomIn, ZoomOut, Maximize2, Tag, Server, Cpu, Database, HardDrive, Monitor
 } from 'lucide-react';
 
 // Define Types
