@@ -494,7 +494,6 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                                             ].map((data, idx) => {
                                                 const total = data.critical + data.major + data.minor;
                                                 const maxHeight = 160;
-                                                const height = (total / 50) * maxHeight;
 
                                                 return (
                                                     <div key={idx} className="flex-1 flex flex-col items-center">
@@ -769,10 +768,10 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                                             <div
                                                 key={idx}
                                                 className={`p-4 rounded-lg transition-all hover:scale-105 cursor-pointer ${item.performance >= 95
-                                                        ? 'bg-green-500 text-white'
-                                                        : item.performance >= 90
-                                                            ? 'bg-yellow-500 text-white'
-                                                            : 'bg-red-500 text-white'
+                                                    ? 'bg-green-500 text-white'
+                                                    : item.performance >= 90
+                                                        ? 'bg-yellow-500 text-white'
+                                                        : 'bg-red-500 text-white'
                                                     }`}
                                             >
                                                 <div className="text-lg font-bold">{item.region}</div>
@@ -795,8 +794,8 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                             <button
                                 onClick={() => setActiveTab('failure')}
                                 className={`px-6 py-4 font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'failure'
-                                        ? 'bg-blue-600 text-white border-b-2 border-blue-600'
-                                        : 'text-slate-600 hover:bg-slate-50'
+                                    ? 'bg-blue-600 text-white border-b-2 border-blue-600'
+                                    : 'text-slate-600 hover:bg-slate-50'
                                     }`}
                             >
                                 <AlertCircle size={18} />
@@ -805,8 +804,8 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                             <button
                                 onClick={() => setActiveTab('frequent-failures')}
                                 className={`px-6 py-4 font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'frequent-failures'
-                                        ? 'bg-blue-600 text-white border-b-2 border-blue-600'
-                                        : 'text-slate-600 hover:bg-slate-50'
+                                    ? 'bg-blue-600 text-white border-b-2 border-blue-600'
+                                    : 'text-slate-600 hover:bg-slate-50'
                                     }`}
                             >
                                 <TrendingUp size={18} />
@@ -815,8 +814,8 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                             <button
                                 onClick={() => setActiveTab('mttr')}
                                 className={`px-6 py-4 font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'mttr'
-                                        ? 'bg-blue-600 text-white border-b-2 border-blue-600'
-                                        : 'text-slate-600 hover:bg-slate-50'
+                                    ? 'bg-blue-600 text-white border-b-2 border-blue-600'
+                                    : 'text-slate-600 hover:bg-slate-50'
                                     }`}
                             >
                                 <Clock size={18} />
@@ -825,8 +824,8 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                             <button
                                 onClick={() => setActiveTab('availability')}
                                 className={`px-6 py-4 font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'availability'
-                                        ? 'bg-blue-600 text-white border-b-2 border-blue-600'
-                                        : 'text-slate-600 hover:bg-slate-50'
+                                    ? 'bg-blue-600 text-white border-b-2 border-blue-600'
+                                    : 'text-slate-600 hover:bg-slate-50'
                                     }`}
                             >
                                 <Activity size={18} />
@@ -867,8 +866,8 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                                                     <td className="px-4 py-3 text-sm font-medium text-orange-600">{report.failureDuration}</td>
                                                     <td className="px-4 py-3">
                                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${report.status === 'resolved'
-                                                                ? 'bg-green-100 text-green-700'
-                                                                : 'bg-red-100 text-red-700'
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-red-100 text-red-700'
                                                             }`}>
                                                             {report.status}
                                                         </span>
@@ -946,10 +945,10 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                                                     <td className="px-4 py-3 text-sm font-bold text-blue-600">{report.mttr}</td>
                                                     <td className="px-4 py-3">
                                                         <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 w-fit ${report.trend === 'down'
-                                                                ? 'bg-green-100 text-green-700'
-                                                                : report.trend === 'up'
-                                                                    ? 'bg-red-100 text-red-700'
-                                                                    : 'bg-yellow-100 text-yellow-700'
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : report.trend === 'up'
+                                                                ? 'bg-red-100 text-red-700'
+                                                                : 'bg-yellow-100 text-yellow-700'
                                                             }`}>
                                                             {report.trend === 'down' && '↓'}
                                                             {report.trend === 'up' && '↑'}
@@ -993,10 +992,10 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                                                             <div className="flex-1 bg-slate-200 rounded-full h-2 max-w-[100px]">
                                                                 <div
                                                                     className={`h-2 rounded-full ${report.uptime >= 98
-                                                                            ? 'bg-green-500'
-                                                                            : report.uptime >= 95
-                                                                                ? 'bg-yellow-500'
-                                                                                : 'bg-red-500'
+                                                                        ? 'bg-green-500'
+                                                                        : report.uptime >= 95
+                                                                            ? 'bg-yellow-500'
+                                                                            : 'bg-red-500'
                                                                         }`}
                                                                     style={{ width: `${report.uptime}%` }}
                                                                 />
@@ -1008,10 +1007,10 @@ const ReportingAnalyticsDashboard: React.FC = () => {
                                                     <td className="px-4 py-3 text-sm font-bold text-blue-600">{report.availability}%</td>
                                                     <td className="px-4 py-3">
                                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${report.status === 'good'
-                                                                ? 'bg-green-100 text-green-700'
-                                                                : report.status === 'warning'
-                                                                    ? 'bg-yellow-100 text-yellow-700'
-                                                                    : 'bg-red-100 text-red-700'
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : report.status === 'warning'
+                                                                ? 'bg-yellow-100 text-yellow-700'
+                                                                : 'bg-red-100 text-red-700'
                                                             }`}>
                                                             {report.status}
                                                         </span>
