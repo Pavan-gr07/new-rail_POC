@@ -11,7 +11,8 @@ import {
     LogOut,
     Radio,
     LocateFixed,
-    Network
+    Network,
+    ClipboardMinus
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "./lib/utils";
@@ -31,6 +32,7 @@ const navigationItems = [
     { label: "Network Topology", path: "/network", icon: Network },
     { label: "Edge NMS", path: "/gis", icon: LocateFixed },
     { label: "Central NMS", path: "/central", icon: LocateFixed },
+    { label: "Reports", path: "/reports", icon: ClipboardMinus },
 ];
 
 export function MainLayout({ children }: MainLayoutProps) {
