@@ -907,7 +907,7 @@ const IPISSystem: React.FC = () => {
     }
   }, [state.trains, state.displayBoards, addAuditLog]);
 
-  const handleLogin = useCallback((password: string) => {
+  const handleLogin = useCallback(() => {
     dispatch({ type: 'SET_AUTHENTICATED', payload: true });
   }, []);
 
