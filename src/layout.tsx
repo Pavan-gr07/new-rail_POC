@@ -34,7 +34,7 @@ const navigationItems = [
     { label: "Edge NMS", path: "/gis", icon: LocateFixed },
     { label: "Central NMS", path: "/central", icon: LocateFixed },
     { label: "Reports", path: "/reports", icon: ClipboardMinus },
-    { label: "Videos", path: "/videos", icon: Video },
+    // { label: "CDC Videos Playlist", path: "/videos", icon: Video },
 ];
 
 export function MainLayout({ children }: MainLayoutProps) {
