@@ -13,6 +13,7 @@ import GIS from "./pages/GIS";
 import NotFound from './pages/NotFound'
 import CNMSGISView from './pages/CentralNMS'
 import ReportingAnalyticsDashboard from './pages/ReportingAnalyticsDashboard'
+import VideoDisplaySoftware from './pages/VideoDisplaySoftware'
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/gis" element={<GIS />} />
           <Route path="/central" element={<CNMSGISView />} />
           <Route path="/reports" element={<ReportingAnalyticsDashboard />} />
+          <Route path="/videos" element={<VideoDisplaySoftware />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </MainLayout>
