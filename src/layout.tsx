@@ -13,7 +13,7 @@ import {
     LocateFixed,
     Network,
     ClipboardMinus,
-    // Video
+    Video, ChartGantt
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "./lib/utils";
@@ -34,7 +34,8 @@ const navigationItems = [
     { label: "Edge NMS", path: "/gis", icon: LocateFixed },
     { label: "Central NMS", path: "/central", icon: LocateFixed },
     { label: "Reports", path: "/reports", icon: ClipboardMinus },
-    // { label: "CDC Videos Playlist", path: "/videos", icon: Video },
+    { label: "CDC Videos Playlist", path: "/videos", icon: Video },
+    { label: "Train Arrival/Departure Information", path: "/train-info", icon: ChartGantt },
 ];
 
 export function MainLayout({ children }: MainLayoutProps) {
