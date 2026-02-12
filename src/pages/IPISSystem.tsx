@@ -1,11 +1,21 @@
 import React, { useState, useEffect, useCallback, useReducer } from 'react';
-import { Train, AlertCircle, Settings, Database, Monitor, Eye, EyeOff } from 'lucide-react';
+import { Clock, Train, AlertCircle, Settings, Database, Monitor, Eye, EyeOff } from 'lucide-react';
 
 // ==================== TYPE DEFINITIONS ====================
 
-type Language = 'english' | 'hindi' | 'regional';
+type Language = 'english' | 'hindi' | 'kannada' | 'tamil' | 'telugu' | 'marathi' | 'bengali' | 'gujarati';
 
 type DisplayEffect = 'scroll' | 'typing' | 'flash' | 'curtain' | 'none';
+
+type StateRegion =
+  | 'karnataka'
+  | 'tamil_nadu'
+  | 'telangana'
+  | 'maharashtra'
+  | 'west_bengal'
+  | 'gujarat'
+  | 'default';
+
 
 type TrainStatus =
   | 'running_right_time'
@@ -60,6 +70,7 @@ interface SystemConfig {
   scrollSpeed: number; // 1-10
   alternateDisplayDuration: number; // seconds
   passwordProtection: boolean;
+  stateRegion: StateRegion;
 }
 
 interface AuditLog {
@@ -69,6 +80,20 @@ interface AuditLog {
   user: string;
   trainId: string;
   details: string;
+}
+
+// Translation system
+interface Translations {
+  [key: string]: {
+    english: string;
+    hindi: string;
+    kannada: string;
+    tamil: string;
+    telugu: string;
+    marathi: string;
+    bengali: string;
+    gujarati: string;
+  };
 }
 
 // ==================== STATE MANAGEMENT ====================
@@ -128,6 +153,7 @@ const initialState: AppState = {
     scrollSpeed: 5,
     alternateDisplayDuration: 3,
     passwordProtection: true,
+    stateRegion: 'karnataka', // Default to Karnataka
   },
   auditLogs: [],
   selectedBoard: null,
@@ -192,28 +218,383 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
 // ==================== UTILITY FUNCTIONS ====================
 
+// Comprehensive translation system
+const translations: Translations = {
+  // UI Labels
+  'train_number': {
+    english: 'Train No.',
+    hindi: 'ट्रेन नं.',
+    kannada: 'ರೈಲು ಸಂ.',
+    tamil: 'ரயில் எண்.',
+    telugu: 'రైలు సం.',
+    marathi: 'रेल्वे क्र.',
+    bengali: 'ট্রেন নং',
+    gujarati: 'ટ્રેન નં.',
+  },
+  'train_name': {
+    english: 'Name',
+    hindi: 'नाम',
+    kannada: 'ಹೆಸರು',
+    tamil: 'பெயர்',
+    telugu: 'పేరు',
+    marathi: 'नाव',
+    bengali: 'নাম',
+    gujarati: 'નામ',
+  },
+  'time': {
+    english: 'Time',
+    hindi: 'समय',
+    kannada: 'ಸಮಯ',
+    tamil: 'நேரம்',
+    telugu: 'సమయం',
+    marathi: 'वेळ',
+    bengali: 'সময়',
+    gujarati: 'સમય',
+  },
+  'platform': {
+    english: 'Platform',
+    hindi: 'प्लेटफॉर्म',
+    kannada: 'ಪ್ಲಾಟ್‌ಫಾರ್ಮ್',
+    tamil: 'மேடை',
+    telugu: 'ప్లాట్‌ఫారమ్',
+    marathi: 'प्लॅटफॉर्म',
+    bengali: 'প্ল্যাটফর্ম',
+    gujarati: 'પ્લેટફોર્મ',
+  },
+  'status': {
+    english: 'Status',
+    hindi: 'स्थिति',
+    kannada: 'ಸ್ಥಿತಿ',
+    tamil: 'நிலை',
+    telugu: 'స్థితి',
+    marathi: 'स्थिती',
+    bengali: 'অবস্থা',
+    gujarati: 'સ્થિતિ',
+  },
+  'actions': {
+    english: 'Actions',
+    hindi: 'कार्रवाई',
+    kannada: 'ಕ್ರಿಯೆಗಳು',
+    tamil: 'செயல்கள்',
+    telugu: 'చర్యలు',
+    marathi: 'कृती',
+    bengali: 'কর্ম',
+    gujarati: 'ક્રિયાઓ',
+  },
+  'add_train': {
+    english: 'Add New Train',
+    hindi: 'नई ट्रेन जोड़ें',
+    kannada: 'ಹೊಸ ರೈಲು ಸೇರಿಸಿ',
+    tamil: 'புதிய ரயிலைச் சேர்க்கவும்',
+    telugu: 'కొత్త రైలు జోడించండి',
+    marathi: 'नवीन रेल्वे जोडा',
+    bengali: 'নতুন ট্রেন যোগ করুন',
+    gujarati: 'નવી ટ્રેન ઉમેરો',
+  },
+  'edit': {
+    english: 'Edit',
+    hindi: 'संपादित करें',
+    kannada: 'ಸಂಪಾದಿಸಿ',
+    tamil: 'திருத்து',
+    telugu: 'సవరించు',
+    marathi: 'संपादित करा',
+    bengali: 'সম্পাদনা',
+    gujarati: 'સંપાદિત કરો',
+  },
+  'delete': {
+    english: 'Delete',
+    hindi: 'हटाएं',
+    kannada: 'ಅಳಿಸಿ',
+    tamil: 'நீக்கு',
+    telugu: 'తొలగించు',
+    marathi: 'हटवा',
+    bengali: 'মুছুন',
+    gujarati: 'કાઢી નાખો',
+  },
+  'arrival': {
+    english: 'Arrival',
+    hindi: 'आगमन',
+    kannada: 'ಆಗಮನ',
+    tamil: 'வருகை',
+    telugu: 'రాక',
+    marathi: 'आगमन',
+    bengali: 'আগমন',
+    gujarati: 'આગમન',
+  },
+  'departure': {
+    english: 'Departure',
+    hindi: 'प्रस्थान',
+    kannada: 'ನಿರ್ಗಮನ',
+    tamil: 'புறப்பாடு',
+    telugu: 'బయలుదేరుట',
+    marathi: 'प्रस्थान',
+    bengali: 'প্রস্থান',
+    gujarati: 'પ્રસ્થાન',
+  },
+  'online': {
+    english: 'Online',
+    hindi: 'ऑनलाइन',
+    kannada: 'ಆನ್‌ಲೈನ್',
+    tamil: 'இணைய',
+    telugu: 'ఆన్‌లైన్',
+    marathi: 'ऑनलाइन',
+    bengali: 'অনলাইন',
+    gujarati: 'ઓનલાઇન',
+  },
+  'offline': {
+    english: 'Offline',
+    hindi: 'ऑफलाइन',
+    kannada: 'ಆಫ್‌ಲೈನ್',
+    tamil: 'இணைப்பு துண்டிப்பு',
+    telugu: 'ఆఫ్‌లైన్',
+    marathi: 'ऑफलाइन',
+    bengali: 'অফলাইন',
+    gujarati: 'ઓફલાઇન',
+  },
+};
+
+// Get translation based on key and language
+const t = (key: string, lang: Language): string => {
+  return translations[key]?.[lang] || translations[key]?.['english'] || key;
+};
+
+// Get regional language based on state
+const getRegionalLanguage = (stateRegion: StateRegion): Language => {
+  const stateLanguageMap: Record<StateRegion, Language> = {
+    karnataka: 'kannada',
+    tamil_nadu: 'tamil',
+    telangana: 'telugu',
+    maharashtra: 'marathi',
+    west_bengal: 'bengali',
+    gujarat: 'gujarati',
+    default: 'hindi',
+  };
+  return stateLanguageMap[stateRegion] || 'hindi';
+};
+
 const getStatusText = (train: Train, language: Language): string => {
-  const statusMap: Record<TrainStatus, { en: string; hi: string }> = {
-    running_right_time: { en: 'Running Right Time', hi: 'समय पर चल रही है' },
-    will_arrive_shortly: { en: 'Will Arrive Shortly', hi: 'जल्द आएगी' },
-    is_arriving: { en: 'Is Arriving On', hi: 'आ रही है' },
-    has_arrived: { en: 'Has Arrived On', hi: 'आ चुकी है' },
-    running_late: { en: `Late by ${train.late || 0} min`, hi: `${train.late || 0} मिनट देरी से` },
-    cancelled: { en: 'Cancelled', hi: 'रद्द की गई है' },
-    indefinite_late: { en: 'Indefinite Late', hi: 'अनिश्चित देरी से' },
-    terminated_at: { en: `Terminated At ${train.terminatedAt || ''}`, hi: `${train.terminatedAt || ''} तक जायेगी` },
-    platform_changed: { en: 'Platform Changed', hi: 'प्लेटफॉर्म बदला गया' },
-    is_ready_to_leave: { en: 'Is Ready to Leave', hi: 'प्रस्थान के लिए तैयार' },
-    is_on_platform: { en: 'Is on Platform', hi: 'प्लेटफॉर्म पर है' },
-    departed: { en: 'Departed', hi: 'प्रस्थान कर गई' },
-    rescheduled: { en: 'Rescheduled', hi: 'परिवर्तित समय' },
-    diverted: { en: `Diverted via ${train.divertedRoute || ''}`, hi: `परिवर्तित मार्ग ${train.divertedRoute || ''}` },
-    delay_departure: { en: 'Delay Departure', hi: 'विलंबित प्रस्थान' },
-    change_of_source: { en: `Start at ${train.changeOfSource || ''}`, hi: `${train.changeOfSource || ''} से जाएगी` },
+  const statusMap: Record<TrainStatus, { english: string; hindi: string; kannada: string; tamil: string; telugu: string; marathi: string; bengali: string; gujarati: string }> = {
+    running_right_time: {
+      english: 'Running Right Time',
+      hindi: 'समय पर चल रही है',
+      kannada: 'ಸಮಯಕ್ಕೆ ಚಲಿಸುತ್ತಿದೆ',
+      tamil: 'சரியான நேரத்தில் இயங்குகிறது',
+      telugu: 'సమయానికి నడుస్తోంది',
+      marathi: 'वेळेवर चालू आहे',
+      bengali: 'সময়মতো চলছে',
+      gujarati: 'સમય પર ચાલી રહી છે',
+    },
+    will_arrive_shortly: {
+      english: 'Will Arrive Shortly',
+      hindi: 'जल्द आएगी',
+      kannada: 'ಶೀಘ್ರದಲ್ಲಿ ಆಗಮಿಸುತ್ತದೆ',
+      tamil: 'விரைவில் வரும்',
+      telugu: 'త్వరలో వస్తుంది',
+      marathi: 'लवकरच येईल',
+      bengali: 'শীঘ্রই আসবে',
+      gujarati: 'ટૂંક સમયમાં આવશે',
+    },
+    is_arriving: {
+      english: 'Is Arriving On',
+      hindi: 'आ रही है',
+      kannada: 'ಆಗಮಿಸುತ್ತಿದೆ',
+      tamil: 'வந்து கொண்டிருக்கிறது',
+      telugu: 'వస్తోంది',
+      marathi: 'येत आहे',
+      bengali: 'আসছে',
+      gujarati: 'આવી રહી છે',
+    },
+    has_arrived: {
+      english: 'Has Arrived On',
+      hindi: 'आ चुकी है',
+      kannada: 'ಆಗಮಿಸಿದೆ',
+      tamil: 'வந்துவிட்டது',
+      telugu: 'వచ్చింది',
+      marathi: 'आले आहे',
+      bengali: 'এসে গেছে',
+      gujarati: 'આવી ગઈ છે',
+    },
+    running_late: {
+      english: `Late by ${train.late || 0} min`,
+      hindi: `${train.late || 0} मिनट देरी से`,
+      kannada: `${train.late || 0} ನಿಮಿಷ ತಡವಾಗಿದೆ`,
+      tamil: `${train.late || 0} நிமிடம் தாமதம்`,
+      telugu: `${train.late || 0} నిమిషాలు ఆలస్యం`,
+      marathi: `${train.late || 0} मिनिटे उशीर`,
+      bengali: `${train.late || 0} মিনিট দেরি`,
+      gujarati: `${train.late || 0} મિનિટ મોડું`,
+    },
+    cancelled: {
+      english: 'Cancelled',
+      hindi: 'रद्द की गई है',
+      kannada: 'ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ',
+      tamil: 'ரத்து செய்யப்பட்டது',
+      telugu: 'రద్దు చేయబడింది',
+      marathi: 'रद्द केले',
+      bengali: 'বাতিল করা হয়েছে',
+      gujarati: 'રદ કરવામાં આવી',
+    },
+    indefinite_late: {
+      english: 'Indefinite Late',
+      hindi: 'अनिश्चित देरी से',
+      kannada: 'ಅನಿರ್ದಿಷ್ಟ ತಡವಾಗಿದೆ',
+      tamil: 'காலவரையற்ற தாமதம்',
+      telugu: 'అనిర్ణీత ఆలస్యం',
+      marathi: 'अनिश्चित उशीर',
+      bengali: 'অনির্দিষ্ট দেরি',
+      gujarati: 'અનિશ્ચિત મોડું',
+    },
+    terminated_at: {
+      english: `Terminated At ${train.terminatedAt || ''}`,
+      hindi: `${train.terminatedAt || ''} तक जायेगी`,
+      kannada: `${train.terminatedAt || ''} ನಲ್ಲಿ ಕೊನೆಗೊಳ್ಳುತ್ತದೆ`,
+      tamil: `${train.terminatedAt || ''} இல் முடிவடைகிறது`,
+      telugu: `${train.terminatedAt || ''} వద్ద ముగుస్తుంది`,
+      marathi: `${train.terminatedAt || ''} येथे संपते`,
+      bengali: `${train.terminatedAt || ''} এ শেষ`,
+      gujarati: `${train.terminatedAt || ''} પર સમાપ્ત`,
+    },
+    platform_changed: {
+      english: 'Platform Changed',
+      hindi: 'प्लेटफॉर्म बदला गया',
+      kannada: 'ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ಬದಲಾಯಿಸಲಾಗಿದೆ',
+      tamil: 'மேடை மாற்றப்பட்டது',
+      telugu: 'ప్లాట్‌ఫారమ్ మార్చబడింది',
+      marathi: 'प्लॅटफॉर्म बदलले',
+      bengali: 'প্ল্যাটফর্ম পরিবর্তিত',
+      gujarati: 'પ્લેટફોર્મ બદલાયું',
+    },
+    is_ready_to_leave: {
+      english: 'Is Ready to Leave',
+      hindi: 'प्रस्थान के लिए तैयार',
+      kannada: 'ನಿರ್ಗಮಿಸಲು ಸಿದ್ಧವಾಗಿದೆ',
+      tamil: 'புறப்பட தயாராக உள்ளது',
+      telugu: 'బయలుదేరడానికి సిద్ధంగా ఉంది',
+      marathi: 'सोडण्यासाठी तयार',
+      bengali: 'ছাড়তে প্রস্তুত',
+      gujarati: 'જવા માટે તૈયાર',
+    },
+    is_on_platform: {
+      english: 'Is on Platform',
+      hindi: 'प्लेटफॉर्म पर है',
+      kannada: 'ಪ್ಲಾಟ್‌ಫಾರ್ಮ್‌ನಲ್ಲಿದೆ',
+      tamil: 'மேடையில் உள்ளது',
+      telugu: 'ప్లాట్‌ఫారమ్‌లో ఉంది',
+      marathi: 'प्लॅटफॉर्मवर आहे',
+      bengali: 'প্ল্যাটফর্মে আছে',
+      gujarati: 'પ્લેટફોર્મ પર છે',
+    },
+    departed: {
+      english: 'Departed',
+      hindi: 'प्रस्थान कर गई',
+      kannada: 'ನಿರ್ಗಮಿಸಿದೆ',
+      tamil: 'புறப்பட்டது',
+      telugu: 'బయలుదేరింది',
+      marathi: 'निघाली',
+      bengali: 'প্রস্থান করেছে',
+      gujarati: 'પ્રસ્થાન કર્યું',
+    },
+    rescheduled: {
+      english: 'Rescheduled',
+      hindi: 'परिवर्तित समय',
+      kannada: 'ಮರುನಿಗದಿಗೊಳಿಸಲಾಗಿದೆ',
+      tamil: 'மாற்று நேரம்',
+      telugu: 'పునఃవ్యవస్థీకరించబడింది',
+      marathi: 'पुनर्निर्धारित',
+      bengali: 'পুনর্নির্ধারিত',
+      gujarati: 'પુનઃનિર્ધારિત',
+    },
+    diverted: {
+      english: `Diverted via ${train.divertedRoute || ''}`,
+      hindi: `परिवर्तित मार्ग ${train.divertedRoute || ''}`,
+      kannada: `ದಾರಿ ತಿರುಗಿಸಲಾಗಿದೆ ${train.divertedRoute || ''}`,
+      tamil: `வழி மாற்றம் ${train.divertedRoute || ''}`,
+      telugu: `మార్గం మార్చబడింది ${train.divertedRoute || ''}`,
+      marathi: `मार्ग बदलला ${train.divertedRoute || ''}`,
+      bengali: `রুট পরিবর্তন ${train.divertedRoute || ''}`,
+      gujarati: `માર્ગ બદલાયો ${train.divertedRoute || ''}`,
+    },
+    delay_departure: {
+      english: 'Delay Departure',
+      hindi: 'विलंबित प्रस्थान',
+      kannada: 'ವಿಳಂಬ ನಿರ್ಗಮನ',
+      tamil: 'தாமத புறப்பாடு',
+      telugu: 'ఆలస్య బయలుదేరుట',
+      marathi: 'विलंबित प्रस्थान',
+      bengali: 'বিলম্বিত প্রস্থান',
+      gujarati: 'વિલંબિત પ્રસ્થાન',
+    },
+    change_of_source: {
+      english: `Start at ${train.changeOfSource || ''}`,
+      hindi: `${train.changeOfSource || ''} से जाएगी`,
+      kannada: `${train.changeOfSource || ''} ನಿಂದ ಪ್ರಾರಂಭ`,
+      tamil: `${train.changeOfSource || ''} இல் தொடங்கும்`,
+      telugu: `${train.changeOfSource || ''} నుండి ప్రారంభం`,
+      marathi: `${train.changeOfSource || ''} पासून सुरू`,
+      bengali: `${train.changeOfSource || ''} থেকে শুরু`,
+      gujarati: `${train.changeOfSource || ''} થી શરૂ`,
+    },
   };
 
-  const lang = language === 'english' ? 'en' : 'hi';
-  return statusMap[train.status][lang];
+  return statusMap[train.status][language];
+};
+
+// Format audit log action for display
+const formatAuditAction = (action: string, lang: Language): string => {
+  const actionMap: Record<string, { english: string; hindi: string; kannada: string; tamil: string; telugu: string; marathi: string; bengali: string; gujarati: string }> = {
+    'ADD_TRAIN': {
+      english: 'Train Added',
+      hindi: 'ट्रेन जोड़ी गई',
+      kannada: 'ರೈಲು ಸೇರಿಸಲಾಗಿದೆ',
+      tamil: 'ரயில் சேர்க்கப்பட்டது',
+      telugu: 'రైలు జోడించబడింది',
+      marathi: 'रेल्वे जोडली',
+      bengali: 'ট্রেন যোগ করা হয়েছে',
+      gujarati: 'ટ્રેન ઉમેરવામાં આવી',
+    },
+    'UPDATE_TRAIN': {
+      english: 'Train Updated',
+      hindi: 'ट्रेन अपडेट की गई',
+      kannada: 'ರೈಲು ನವೀಕರಿಸಲಾಗಿದೆ',
+      tamil: 'ரயில் புதுப்பிக்கப்பட்டது',
+      telugu: 'రైలు నవీకరించబడింది',
+      marathi: 'रेल्वे अद्यतनित',
+      bengali: 'ট্রেন আপডেট করা হয়েছে',
+      gujarati: 'ટ્રેન અપડેટ કરવામાં આવી',
+    },
+    'DELETE_TRAIN': {
+      english: 'Train Deleted',
+      hindi: 'ट्रेन हटाई गई',
+      kannada: 'ರೈಲು ಅಳಿಸಲಾಗಿದೆ',
+      tamil: 'ரயில் நீக்கப்பட்டது',
+      telugu: 'రైలు తొలగించబడింది',
+      marathi: 'रेल्वे हटवली',
+      bengali: 'ট্রেন মুছে ফেলা হয়েছে',
+      gujarati: 'ટ્રેન કાઢી નાખવામાં આવી',
+    },
+    'TRANSFER_TO_BOARD': {
+      english: 'Transferred to Board',
+      hindi: 'बोर्ड में स्थानांतरित',
+      kannada: 'ಬೋರ್ಡ್‌ಗೆ ವರ್ಗಾಯಿಸಲಾಗಿದೆ',
+      tamil: 'பலகைக்கு மாற்றப்பட்டது',
+      telugu: 'బోర్డుకు బదిలీ చేయబడింది',
+      marathi: 'बोर्डवर हस्तांतरित',
+      bengali: 'বোর্ডে স্থানান্তরিত',
+      gujarati: 'બોર્ડમાં સ્થાનાંતરિત',
+    },
+    'CHANGE_PASSWORD': {
+      english: 'Password Changed',
+      hindi: 'पासवर्ड बदला गया',
+      kannada: 'ಪಾಸ್ವರ್ಡ್ ಬದಲಾಯಿಸಲಾಗಿದೆ',
+      tamil: 'கடவுச்சொல் மாற்றப்பட்டது',
+      telugu: 'పాస్‌వర్డ్ మార్చబడింది',
+      marathi: 'पासवर्ड बदलला',
+      bengali: 'পাসওয়ার্ড পরিবর্তন করা হয়েছে',
+      gujarati: 'પાસવર્ડ બદલાયો',
+    },
+  };
+
+  return actionMap[action]?.[lang] || action;
 };
 
 // ==================== COMPONENTS ====================
@@ -237,7 +618,7 @@ const LoginModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Master Database Access</h2>
         <form onSubmit={handleSubmit}>
@@ -280,6 +661,12 @@ const ConfigPanel: React.FC<{
   config: SystemConfig;
   onUpdate: (updates: Partial<SystemConfig>) => void;
 }> = ({ config, onUpdate }) => {
+  // Auto-update language when state changes
+  const handleStateChange = (stateRegion: StateRegion) => {
+    const regionalLang = getRegionalLanguage(stateRegion);
+    onUpdate({ stateRegion, language: regionalLang });
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
       <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
@@ -288,6 +675,26 @@ const ConfigPanel: React.FC<{
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* State/Region Selection */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            State/Region (Auto-selects Regional Language)
+          </label>
+          <select
+            value={config.stateRegion}
+            onChange={(e) => handleStateChange(e.target.value as StateRegion)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="karnataka">Karnataka (ಕನ್ನಡ)</option>
+            <option value="tamil_nadu">Tamil Nadu (தமிழ்)</option>
+            <option value="telangana">Telangana (తెలుగు)</option>
+            <option value="maharashtra">Maharashtra (मराठी)</option>
+            <option value="west_bengal">West Bengal (বাংলা)</option>
+            <option value="gujarat">Gujarat (ગુજરાતી)</option>
+            <option value="default">Other (Hindi)</option>
+          </select>
+        </div>
+
         {/* Language Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -299,8 +706,13 @@ const ConfigPanel: React.FC<{
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="english">English</option>
-            <option value="hindi">Hindi</option>
-            <option value="regional">Regional</option>
+            <option value="hindi">Hindi (हिंदी)</option>
+            <option value="kannada">Kannada (ಕನ್ನಡ)</option>
+            <option value="tamil">Tamil (தமிழ்)</option>
+            <option value="telugu">Telugu (తెలుగు)</option>
+            <option value="marathi">Marathi (मराठी)</option>
+            <option value="bengali">Bengali (বাংলা)</option>
+            <option value="gujarati">Gujarati (ગુજરાતી)</option>
           </select>
         </div>
 
@@ -342,7 +754,7 @@ const ConfigPanel: React.FC<{
         </div>
 
         {/* Alternate Display Duration */}
-        <div>
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Alternate Display Duration: {config.alternateDisplayDuration}s
           </label>
@@ -354,6 +766,10 @@ const ConfigPanel: React.FC<{
             onChange={(e) => onUpdate({ alternateDisplayDuration: parseInt(e.target.value) })}
             className="w-full"
           />
+          <div className="flex justify-between text-xs text-gray-500">
+            <span>1 second</span>
+            <span>10 seconds</span>
+          </div>
         </div>
       </div>
     </div>
@@ -684,10 +1100,11 @@ const TrainList: React.FC<{
     return () => clearInterval(interval);
   }, [trains, config.alternateDisplayDuration]);
 
-  const getDisplayEffectClass = (effect: DisplayEffect) => {
+  const getDisplayEffectClass = (effect: DisplayEffect, speed: number) => {
+    const duration = 11 - speed; // Inverse: higher speed = shorter duration
     switch (effect) {
       case 'scroll':
-        return 'animate-marquee';
+        return `animate-scroll-${speed}`;
       case 'flash':
         return 'animate-pulse';
       case 'typing':
@@ -701,20 +1118,34 @@ const TrainList: React.FC<{
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
         <Database className="text-blue-600" />
-        Train Database ({trains.length} trains)
+        {t('train_database', config.language)} ({trains.length} {t('trains_count', config.language)})
       </h3>
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b-2 border-gray-200">
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Train No.</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Name</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Time</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Platform</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">A/D</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                {t('train_number', config.language)}
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                {t('train_name', config.language)}
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                {t('time', config.language)}
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                {t('platform', config.language)}
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                A/D
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                {t('status', config.language)}
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                {t('actions', config.language)}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -731,8 +1162,18 @@ const TrainList: React.FC<{
                   </div>
                 </td>
                 <td className="py-3 px-4">
-                  <div className={getDisplayEffectClass(config.displayEffect)}>
-                    {train.trainName}
+                  {/* Restricted animation container - overflow hidden */}
+                  <div className="overflow-hidden relative" style={{ maxWidth: '200px' }}>
+                    <div
+                      className={getDisplayEffectClass(config.displayEffect, config.scrollSpeed)}
+                      style={{
+                        animation: config.displayEffect === 'scroll'
+                          ? `marquee ${11 - config.scrollSpeed}s linear infinite`
+                          : undefined,
+                      }}
+                    >
+                      {train.trainName}
+                    </div>
                   </div>
                 </td>
                 <td className="py-3 px-4">
@@ -755,7 +1196,10 @@ const TrainList: React.FC<{
                       : 'bg-blue-100 text-blue-800'
                       }`}
                   >
-                    {train.arrivalDeparture}
+                    {train.arrivalDeparture === 'A'
+                      ? t('arrival', config.language).substring(0, 1)
+                      : t('departure', config.language).substring(0, 1)
+                    }
                   </span>
                 </td>
                 <td className="py-3 px-4">
@@ -769,13 +1213,13 @@ const TrainList: React.FC<{
                       onClick={() => onEdit(train)}
                       className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
                     >
-                      Edit
+                      {t('edit', config.language)}
                     </button>
                     <button
                       onClick={() => onDelete(train.id)}
                       className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
                     >
-                      Delete
+                      {t('delete', config.language)}
                     </button>
                     <select
                       onChange={(e) => {
@@ -787,7 +1231,9 @@ const TrainList: React.FC<{
                       className="px-2 py-1 border border-gray-300 rounded text-sm"
                       defaultValue=""
                     >
-                      <option value="" disabled>Transfer to...</option>
+                      <option value="" disabled>
+                        {t('transfer_to', config.language)}...
+                      </option>
                       {displayBoards
                         .filter(b => b.isOnline)
                         .map(board => (
@@ -907,7 +1353,7 @@ const IPISSystem: React.FC = () => {
     }
   }, [state.trains, state.displayBoards, addAuditLog]);
 
-  const handleLogin = useCallback(() => {
+  const handleLogin = useCallback((password: string) => {
     dispatch({ type: 'SET_AUTHENTICATED', payload: true });
   }, []);
 
@@ -941,7 +1387,7 @@ const IPISSystem: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-3">
               <Train size={36} />
-              IP-Based Integrated Passenger Information System
+              Train Arrival/Departure Information Entry Features
             </h1>
             <p className="text-blue-100 mt-1">Central Data Controller (CDC)</p>
           </div>
