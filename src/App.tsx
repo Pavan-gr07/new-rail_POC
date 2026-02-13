@@ -14,7 +14,9 @@ import NotFound from './pages/NotFound'
 import CNMSGISView from './pages/CentralNMS'
 import ReportingAnalyticsDashboard from './pages/ReportingAnalyticsDashboard'
 import VideoDisplaySoftware from './pages/VideoDisplaySoftware'
-import IPISSystem from './pages/IPISSystem'
+import ArrivalDepartureInfo from './pages/ArrivalDepartureInfo'
+import AnnouncementSystem from './pages/AnnouncementSystem'
+import CoachGuidanceSystem from './pages/CoachGuidanceSystem'
 
 function App() {
 
@@ -34,7 +36,9 @@ function App() {
           <Route path="/central" element={<CNMSGISView />} />
           <Route path="/reports" element={<ReportingAnalyticsDashboard />} />
           <Route path="/videos" element={<VideoDisplaySoftware />} />
-          <Route path="/train-info" element={<IPISSystem />} />
+          <Route path="/train-info" element={<ArrivalDepartureInfo />} />
+          <Route path="/announcement" element={<AnnouncementSystem />} />
+          <Route path="/coach-guidence" element={<CoachGuidanceSystem />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </MainLayout>

@@ -1287,7 +1287,7 @@ const AuditLogViewer: React.FC<{ logs: AuditLog[] }> = ({ logs }) => {
 
 // ==================== MAIN COMPONENT ====================
 
-const IPISSystem: React.FC = () => {
+const ArrivalDepartureInfo: React.FC = () => {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const [editingTrain, setEditingTrain] = useState<Train | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -1526,4 +1526,4 @@ const IPISSystem: React.FC = () => {
   );
 };
 
-export default IPISSystem;
+export default ArrivalDepartureInfo;
